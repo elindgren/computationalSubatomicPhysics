@@ -1,4 +1,4 @@
-function F = F(V, Ed)
+function F = Func(V, Ed)
 % generates the function F(r)
 % input r - radius in fm, Ed - binding energy, V - the current value V(r) for the
 % Mallfliet-Tjon potential.
@@ -12,5 +12,4 @@ h_barc = 197.327;  %MeV*fm
 K = 2*my/h_barc.^2;
 
 F = K*(V-Ed);
-
 end 

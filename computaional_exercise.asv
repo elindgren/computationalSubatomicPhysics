@@ -24,7 +24,7 @@ Emin=-100;
 Emax=0.0;
 E=0.5*(Emin+Emax);
 max_iter=1000;
-tol_kontinuitet=1e-7;
+tol_kontinuitet=1e-3;
 
 %iterera över energin E
 for iter=1:max_iter
@@ -81,15 +81,6 @@ for iter=1:max_iter
     E = 0.5*(Emax+Emin);
 end
 E
-
-% Norm u(r)
-I = trapz(r, u.^2)  % is this correct, should be absolute squared?
-u = u/I;
-
-% calculate expectation value of r
-r_exp = trapz(r, u.^2.*sqrt(r.^2/4))
-
-% plot u(r)
 subplot(3,1,1);
 plot(r, u)
 subplot(3,1,2);
