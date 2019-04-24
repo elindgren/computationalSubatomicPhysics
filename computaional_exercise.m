@@ -2,7 +2,7 @@ clc; clf; clear all
 %grid i fm
 rmax=10.0;
 %antal steg 
-N=20000;
+N=10000;
 %ekvidistant steglängd
 h=(rmax)/(N);
 fprintf('stegläng:%f\n',h)
@@ -20,7 +20,8 @@ end
 fprintf('\tdone\n')
 
 %parametrar
-Emin=-100;
+Emin=min(Vr);
+fprintf('Emin=%.3f \n', Emin)
 Emax=0.0;
 E=0.5*(Emin+Emax);
 max_iter=1000;
@@ -68,13 +69,14 @@ for iter=1:max_iter
     matching = (u(rmp_i-1)+u(rmp_i+1)-u(rmp_i).*(2+h^.2.*Fvec(rmp_i)))./h;
     
     fprintf('\tMatching value m=%.16f \n', matching)
+    fprintf('\tu(rmp_i) value =%.16f \n', u(rmp_i))
     fprintf('\n')
     
     if abs(matching) < tol_kontinuitet
         break;
     end
-    if u(rmp_i)*matching>0
-        Emax=E;
+    if u(rmp_i)*matching < 0
+        Emax = E;
     else
         Emin = E;
     end
@@ -84,10 +86,10 @@ E
 
 % Norm u(r)
 I = trapz(r, u.^2)  % is this correct, should be absolute squared?
-u = u/I;
-
+u = u/sqrt(I);
+I_normed = trapz(r, u.^2)
 % calculate expectation value of r
-r_exp = trapz(r, u.^2.*sqrt(r.^2/4))
+r_exp = sqrt(trapz(r, u.^2.*(r/2).^2))
 
 % plot u(r)
 subplot(3,1,1);
