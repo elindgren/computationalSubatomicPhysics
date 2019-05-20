@@ -1,13 +1,17 @@
 clc
 figure(1)
 clf
+figure(2)
+clf
 clear all
 %grid i fm
-rmaxes=[10, 20, 30, 40, 50];
-%rmaxes=[10];
+%rmaxes=[10,15,20,30];
+rmaxes=[8,10,12,16,20];
 %antal steg
 Ns=[10, 20, 30, 40, 50]*1e3;
-E_mins = -[60, 70, 80, 90, 100];
+%Ns=[20]*1e3;
+%E_mins = -[10, 20, 30, 40, 50];
+E_mins=-[10,20,30,40,50];
 r_starts=[1,2,3,4,5];
 
 saved_mean_mapes = zeros(length(rmaxes),length(Ns),length(E_mins));
@@ -40,11 +44,11 @@ for g=1:1:length(E_mins)
                     Vr(l)=MalflietTjon(r(l));
                 end
                 %parametrar
-                Emin=-10; %!!
+                Emin = E_mins(g);
                 Emax=0.0;
                 E=0.5*(Emin+Emax);
                 max_iter=1000; %!! 
-                tol_kontinuitet=1e-6; %!! 
+                tol_kontinuitet=1e-9; %!! 
                 %iterera över energin E
                 for iter=1:max_iter
                     % initialisera Fvec(r) (dvs. F i ekv. 15),
@@ -91,13 +95,14 @@ for g=1:1:length(E_mins)
                         E=0.5*(Emax+Emin);
                 end
                 % norm wavefcn
-                I = trapz(r, u);  % This is the same as the value of R(r), since R(r) = u/r and there is r^2 from dr
+                I = sqrt(trapz(r, u.^2));  % This is the same as the value of R(r), since R(r) = u/r and there is r^2 from dr
                 u = u./I;
+                figure(1)
                 plot(r,u) 
                 hold on
                 % save values
                 Eds(save_counter) = E;
-                rds(save_counter) = sqrt(trapz(r,u.*r.^2))/2;
+                rds(save_counter) = sqrt(trapz(r,(u.*r).^2))/2;
                 save_counter = save_counter + 1;
                 
                 urs(wf_nbr, :) = u;
@@ -112,6 +117,7 @@ for g=1:1:length(E_mins)
             for p=1:1:N+1
                 u_avg(p) = mean(urs(:,p));
             end
+            figure(2)
             plot(r,u_avg, 'r')
             %calculate all mean absolute percentage errors against this
             %average
@@ -130,13 +136,14 @@ for g=1:1:length(E_mins)
     end
 end
 
-fprintf('\nEd: %f.3',mean(Eds))
-fprintf('pm%f.3 \n',std(Eds))
-fprintf('rd: %f.3\n',mean(rds))
+fprintf('\nEd: %.3f',mean(Eds))
+fprintf('pm%.3f \n',std(Eds))
+fprintf('rd: %.3f',mean(rds))
+fprintf('pm%.3f \n',std(rds))
 
 m_s = size(saved_mean_mapes);
 resh_mape = reshape(saved_mean_mapes, [1,m_s(1)*m_s(2)*m_s(3)]);
-fprintf('Mean mean MAPE in percent: %f.3\n',mean(resh_mape))
+fprintf('Mean mean MAPE in percent: %.9f\n',mean(resh_mape))
 
 % calculate average u
 
